@@ -4,6 +4,8 @@ end
 
 require 'flickraw'
 require 'yaml'
+require 'cloud'
+
 
 Shoes.app do
 
@@ -52,20 +54,25 @@ Shoes.app do
 			debug photosetinfo[0]["id"].to_s #it's an array of a hash. Even though just one
 			photosetphotos = flickr.photosets.getPhotos(:photoset_id => photosetinfo[0]["id"] )
 			debug(photosetphotos["photo"])
+			array = []
 			photosetphotos["photo"].each do |photo|
 				debug flickr.tags.getListPhoto(:photo_id => photo["id"])
-				# Need to build tag cloud from this. Either "_content" or "raw" for the tag names
-				# Could have a look at this http://github.com/ninajansen/cloud
-				# Otherwise need to build one.
+				temp = flickr.tags.getListPhoto(:photo_id => photo["id"])
+				temp["tags"].each do |tags| #should be an array
+					array << tags["_content"]
+				end
+				debug array
+
+				# Caching - anyway? Could cache list of photos from set, but then what about if updated?
+				# Sleep interval between calls.
 			end
 
-		#what to do
+		cloud = TagCloud.new(array.join(" "))
+		eval cloud.build
+		debug cloud.build
 		end
-
 	
-
-	debug(flickr.photosets.getList)
-
 end
+
 
 
