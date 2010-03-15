@@ -9,6 +9,8 @@ require 'cloud'
 
 Shoes.app do
 
+	
+	#Need to improve GUI feedback on opening. Thread??
 	FlickRaw.api_key=""
 	FlickRaw.shared_secret=""
 	
@@ -18,6 +20,7 @@ Shoes.app do
 				$SETTINGS = YAML::load(File.read(TOKENFILE))
 				@token = $SETTINGS["Token"]
 				auth = flickr.auth.checkToken :auth_token => @token
+				
 	else
 
 		frob = flickr.auth.getFrob
@@ -48,30 +51,38 @@ Shoes.app do
 
 	list_box :items => @setlist, 
 		:chose => @setlist[0] do |set|
+			#Need to implement redraw on next select, etc....
 			para set.text
+			$p = progress :width => 1.0
 			photosetinfo = @photosetlist.select {|s| s["title"] == set.text}
+		
 			debug(photosetinfo)
+			count = photosetinfo[0]["photos"].to_f
+			counter = 0.0
 			debug photosetinfo[0]["id"].to_s #it's an array of a hash. Even though just one
 			photosetphotos = flickr.photosets.getPhotos(:photoset_id => photosetinfo[0]["id"] )
 			debug(photosetphotos["photo"])
-			array = []
-			photosetphotos["photo"].each do |photo|
-				debug flickr.tags.getListPhoto(:photo_id => photo["id"])
-				temp = flickr.tags.getListPhoto(:photo_id => photo["id"])
-				temp["tags"].each do |tags| #should be an array
-					array << tags["_content"]
+			$array = []
+			Thread.new do
+				photosetphotos["photo"].each do |photo|
+					debug flickr.tags.getListPhoto(:photo_id => photo["id"])
+					temp = flickr.tags.getListPhoto(:photo_id => photo["id"])
+					temp["tags"].each do |tags| #should be an array
+						$array << tags["_content"]
+					end
+					debug $array
+					sleep(1) # Sleep interval between calls.
+					counter += 1.0
+					$p.fraction = counter/count
+					debug (counter/count)
+					# Caching - anyway? Could cache list of photos from set, but then what about if updated?
 				end
-				debug array
-
-				# Caching - anyway? Could cache list of photos from set, but then what about if updated?
-				# Sleep interval between calls.
+			cloud = TagCloud.new($array.join(" "))
+			$p.hide
+			debug cloud.build
+			eval cloud.build
 			end
-
-		cloud = TagCloud.new(array.join(" "))
-		eval cloud.build
-		debug cloud.build
 		end
-	
 end
 
 
