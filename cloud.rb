@@ -2,10 +2,12 @@
 # Tweaked to return values suitable for Shoes (lines 38-40, etc)
 class TagCloud
     
+
   def initialize(words)
     @wordcount = count_words(words)
   end
   
+
   def count_words(words)
     wordcount = {}
     words.split(/\s/).each do |word| 
@@ -21,6 +23,7 @@ class TagCloud
     wordcount
   end
   
+
   def font_ratio(wordcount={})
     min, max = 1000000, -1000000
     wordcount.each_key do |word|
@@ -30,6 +33,7 @@ class TagCloud
     18.0 / (max - min)
   end
   
+
   def build
     cloud = String.new
     ratio = font_ratio(@wordcount)
@@ -40,7 +44,10 @@ class TagCloud
 	  color.reverse! #alternate between colours
     end
     cloud
+	#debug cloud
   end
+
+
 end
 
 
