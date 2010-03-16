@@ -1,0 +1,16 @@
+h1. Shoeset
+
+"Shoeset":http://www.flickr.com/services/apps/72157623408545587/ is a simple and small "Shoes":http://shoes.heroku.com application that displays tag clouds for a user's Flickr sets.
+
+h2. Download
+
+Shoeset can be downloaded from the "downloads":http://github.com/i5m/shoeset/downloads page.
+
+_Shoeset is distributed as a Shy file. You will need to "download Shoes":http://snippets.dzone.com/posts/show/6027 to use it._
+
+h2. Credits
+
+Shoeset uses the following:
+
+* "Flickraw":http://github.com/hanklords/flickraw
+* "TagCloud":http://snippets.dzone.com/posts/show/6027 class
