@@ -37,6 +37,8 @@ class TagCloud
   def build
     cloud = String.new
     ratio = font_ratio(@wordcount)
+	ratio = 1 if ratio.infinite?
+	debug(ratio) #Need to fix for infinity
 	color = ["steelblue", "deeppink"]
     @wordcount.each_key do |word|
       font_size = (10 + (@wordcount[word] * ratio)).round #must round for shoes since pixels
