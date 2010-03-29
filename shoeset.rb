@@ -72,9 +72,14 @@ Shoes.app :title => "Shoeset" do
 		@loadingsetlist.hide
 		flow do
 			para "Pick a set to generate Tag Cloud: "
-			list_box :items => @setlist, 
-				:chose => @setlist[0] do |set|
-					fluffygen(set)				
+			@listbox = list_box :items => @setlist do |set|
+					if $p.nil? or $p.fraction() == 1.0 	#because this is threaded, must check to see if already running
+						@currentset = set.text
+						fluffygen(set)
+					else #if user picks another set, put selected back to original choice if running.
+						#debug(@currentset)
+						@listbox.choose(@currentset) #Set to 
+					end
 				end
 		end #flow
 		@tagcloud = flow do #if this is a stack then clearing it goes crazy
