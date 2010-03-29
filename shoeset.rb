@@ -6,7 +6,7 @@ require 'flickraw'
 require 'yaml'
 require 'cloud'
 
-
+	
 Shoes.app :title => "Shoeset" do
 
 	
@@ -15,6 +15,8 @@ Shoes.app :title => "Shoeset" do
 	FlickRaw.api_key=KEYS["api_key"]
 	FlickRaw.shared_secret=KEYS["shared_secret"]
 	TOKENFILE = ENV['HOME']+"\\.shoeset.yml"
+
+
 
 	#Need to improve GUI feedback/responsive on opening. Thread??
 	def login
@@ -58,9 +60,16 @@ Shoes.app :title => "Shoeset" do
 		@token = para "Token: #{@auth.token}"
 		@token.hide
 		@setlist = []
+		@loadingsetlist = para "Loading sets..."
+		@animatelist = animate(5) do |frame|
+			weight = ["bold", "normal"]
+			@loadingsetlist.style(:weight => weight[frame&1])
+		end
 		@photosetlist = flickr.photosets.getList.each do |set|
 			@setlist << set["title"]
 		end
+		@animatelist.stop
+		@loadingsetlist.hide
 		flow do
 			para "Pick a set to generate Tag Cloud: "
 			list_box :items => @setlist, 
@@ -117,11 +126,18 @@ Shoes.app :title => "Shoeset" do
 		end
 	end
 
+	
 
-	@container = slot do
-		para "Never see this"
+	@container = stack do
+		@loading = para "Loading..."
 	end
-	login
+	@animate = animate(5) do |frame|
+		weight = ["bold", "normal"]
+		@loading.style(:weight => weight[frame&1])
+	end
+	Thread.new do 
+		login
+	end
 
 end
 
