@@ -1,10 +1,7 @@
-Shoes.setup do
-	gem 'flickraw'
-end
-
+require 'green_shoes'
 require 'flickraw'
 require 'yaml'
-require 'cloud'
+require './cloud.rb'
 
 	
 Shoes.app :title => "Shoeset" do
@@ -25,10 +22,14 @@ Shoes.app :title => "Shoeset" do
 					@token = $SETTINGS["Token"]
 					@auth = flickr.auth.checkToken :auth_token => @token
 					@login = flickr.test.login
-					@container.clear{ui} #draw ui 		
+					#@container.clear{ui} #draw ui 		
+					ui
 		else
 			frob = flickr.auth.getFrob
 			auth_url = FlickRaw.auth_url :frob => frob, :perms => 'read'
+			puts auth_url
+#http://flickr.com/services/auth/?api_key=dc4e7111a9e2d0273c364d41eff09181&perms=read&frob=72157627114000141-c7ce4760e24f013a-936625&api_sig=47e76db2c77138efc3c35bb09f2c0f34
+			
 		
 			para "Click to ", link("authorise", :click =>auth_url), " with Flickr."
 			para "Click OK when you are finished."
@@ -126,8 +127,12 @@ Shoes.app :title => "Shoeset" do
 			#debug $array
 			cloud = TagCloud.new($array.join(" "))
 			$p.hide
-			#debug cloud.build
-			@tagcloud.clear{eval cloud.build}
+			puts cloud.build
+			#@tagcloud.clear{eval cloud.build}
+			#Not working here....
+			flow do
+				eval cloud.build
+			end
 		end
 	end
 
@@ -136,13 +141,13 @@ Shoes.app :title => "Shoeset" do
 	@container = stack do
 		@loading = para "Loading..."
 	end
-	@animate = animate(5) do |frame|
+   @animate = animate(5) do |frame|
 		weight = ["bold", "normal"]
 		@loading.style(:weight => weight[frame&1])
 	end
-	Thread.new do 
+	#Thread.new do 
 		login
-	end
+	#end
 
 end
 
